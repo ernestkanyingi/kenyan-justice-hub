@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -113,12 +112,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
-      // Critical: Include emailRedirectTo for proper authentication flow
+      console.log('=== SIGNUP DEBUG INFO ===');
+      console.log('Current URL:', window.location.href);
+      console.log('Origin:', window.location.origin);
+      console.log('Supabase URL check:', supabase.supabaseUrl);
+      
+      // Test basic connectivity to Supabase
+      console.log('Testing Supabase connectivity...');
+      const connectivityTest = await fetch(`${supabase.supabaseUrl}/rest/v1/`, {
+        method: 'HEAD',
+        headers: {
+          'apikey': supabase.supabaseKey,
+        }
+      });
+      console.log('Connectivity test status:', connectivityTest.status);
+      
       const redirectUrl = `${window.location.origin}/`;
-      
-      console.log('Attempting signup with:', { email, redirectUrl });
-      
-      const { error } = await supabase.auth.signUp({
+      console.log('Attempting signup with:', { 
+        email, 
+        redirectUrl,
+        hasPassword: !!password,
+        metadata: {
+          ...metadata,
+          // Don't log sensitive data
+          password: '[REDACTED]'
+        }
+      });
+
+      const signUpOptions = {
         email,
         password,
         options: {
@@ -130,20 +151,57 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: metadata.role || 'officer'
           }
         }
+      };
+
+      console.log('SignUp options (sanitized):', {
+        ...signUpOptions,
+        password: '[REDACTED]'
       });
 
+      const { data, error } = await supabase.auth.signUp(signUpOptions);
+
+      console.log('Supabase response data:', data);
+
       if (error) {
-        console.error('Signup error:', error);
-        toast.error(error.message);
+        console.error('Signup error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.name,
+          details: error
+        });
+        
+        // Provide more specific error messages
+        if (error.message.includes('fetch')) {
+          toast.error('Network error: Cannot connect to authentication service. Please check your internet connection.');
+        } else if (error.message.includes('Invalid login credentials')) {
+          toast.error('Invalid email or password format.');
+        } else if (error.message.includes('User already registered')) {
+          toast.error('An account with this email already exists. Please try signing in instead.');
+        } else {
+          toast.error(`Registration failed: ${error.message}`);
+        }
         return { error };
       }
 
-      console.log('Signup successful');
+      console.log('Signup successful, user data:', data);
       toast.success('Registration successful! Please check your email to verify your account.');
       return { error: null };
     } catch (error: any) {
-      console.error('Signup catch error:', error);
-      toast.error('An unexpected error occurred during registration');
+      console.error('Signup catch error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        cause: error.cause
+      });
+      
+      // Handle different types of network errors
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        toast.error('Network error: Unable to reach the server. Please check your connection and try again.');
+      } else if (error.name === 'AbortError') {
+        toast.error('Request timeout: The server took too long to respond.');
+      } else {
+        toast.error(`Unexpected error during registration: ${error.message}`);
+      }
       return { error };
     }
   };
