@@ -48,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       href: '/cases', 
       icon: FileText, 
       roles: ['officer', 'investigator', 'admin', 'supervisor'],
-      badge: 5 // Active cases count
+      badge: 5
     },
     { 
       name: 'Evidence', 
@@ -67,7 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       href: '/incidents', 
       icon: AlertTriangle, 
       roles: ['officer', 'investigator', 'admin', 'supervisor'],
-      badge: 2 // Pending incidents
+      badge: 2
     },
     { 
       name: 'Admin Panel', 
@@ -123,12 +123,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                   }`}
                 >
                   <div className="flex items-center space-x-3">
-                    <Icon className="w-5 h-5" />
-                    <span>{item.name}</span>
+                    <Icon className="w-5 h-5 shrink-0" />
+                    <span className="truncate">{item.name}</span>
                   </div>
                   
                   {item.badge && item.badge > 0 && (
-                    <span className={`px-2 py-1 text-xs rounded-full font-medium ${
+                    <span className={`px-2 py-1 text-xs rounded-full font-medium shrink-0 ${
                       active 
                         ? 'bg-white text-gov-primary' 
                         : 'bg-red-100 text-red-700'
@@ -148,19 +148,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </p>
           
           {user.role === 'officer' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
               New Incident Report
             </button>
           )}
           
           {['investigator', 'supervisor', 'admin'].includes(user.role) && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
               Create New Case
             </button>
           )}
           
           {user.role === 'admin' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
               System Settings
             </button>
           )}

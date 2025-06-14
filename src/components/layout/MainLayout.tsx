@@ -22,9 +22,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children, user }) => {
     <div className="min-h-screen bg-gov-background">
       <TopNavBar user={user} />
       <div className="flex">
-        <Sidebar user={user} />
-        <main className="flex-1 p-6 ml-0 transition-all duration-300">
-          <div className="gov-container">
+        <div className="hidden lg:block">
+          <Sidebar user={user} />
+        </div>
+        <main className="flex-1 p-4 sm:p-6 transition-all duration-300">
+          <div className="gov-container max-w-full">
             {children}
           </div>
         </main>
