@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -115,14 +116,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('=== SIGNUP DEBUG INFO ===');
       console.log('Current URL:', window.location.href);
       console.log('Origin:', window.location.origin);
-      console.log('Supabase URL check:', supabase.supabaseUrl);
       
-      // Test basic connectivity to Supabase
+      // Test basic connectivity to Supabase using the known URL
       console.log('Testing Supabase connectivity...');
-      const connectivityTest = await fetch(`${supabase.supabaseUrl}/rest/v1/`, {
+      const supabaseUrl = 'https://uuirkrlxpmfqljfldtqt.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1aXJrcmx4cG1mcWxqZmxkdHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDIxMDAsImV4cCI6MjA2NTUxODEwMH0.2ro97JRiAObl3ieJjQTxPiCdsMRNamUFRurQww7qhsQ';
+      
+      const connectivityTest = await fetch(`${supabaseUrl}/rest/v1/`, {
         method: 'HEAD',
         headers: {
-          'apikey': supabase.supabaseKey,
+          'apikey': supabaseKey,
         }
       });
       console.log('Connectivity test status:', connectivityTest.status);
