@@ -113,7 +113,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
+      // Critical: Include emailRedirectTo for proper authentication flow
       const redirectUrl = `${window.location.origin}/`;
+      
+      console.log('Attempting signup with:', { email, redirectUrl });
       
       const { error } = await supabase.auth.signUp({
         email,
@@ -130,34 +133,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
 
       if (error) {
+        console.error('Signup error:', error);
         toast.error(error.message);
         return { error };
       }
 
+      console.log('Signup successful');
       toast.success('Registration successful! Please check your email to verify your account.');
       return { error: null };
     } catch (error: any) {
-      toast.error('An unexpected error occurred');
+      console.error('Signup catch error:', error);
+      toast.error('An unexpected error occurred during registration');
       return { error };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
+      console.log('Attempting signin with:', email);
+      
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) {
+        console.error('Signin error:', error);
         toast.error(error.message);
         return { error };
       }
 
+      console.log('Signin successful');
       toast.success('Welcome back!');
       return { error: null };
     } catch (error: any) {
-      toast.error('An unexpected error occurred');
+      console.error('Signin catch error:', error);
+      toast.error('An unexpected error occurred during login');
       return { error };
     }
   };
