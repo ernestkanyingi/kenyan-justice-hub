@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,6 +17,29 @@ const mockUser = {
 };
 
 const Reports = () => {
+  const { profile } = useAuth();
+
+  // Convert profile to the format expected by MainLayout
+  const user = profile ? {
+    id: profile.id,
+    name: profile.full_name,
+    email: profile.email,
+    role: profile.role,
+    badge_number: profile.badge_number || undefined,
+    department: profile.department || undefined,
+  } : null;
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gov-primary mx-auto"></div>
+          <p className="mt-4 text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   const mockReports = [
     { id: 1, title: 'Monthly Crime Statistics', type: 'Statistical', status: 'completed', created_by: 'Det. Johnson', created_at: '2024-01-15', case_number: null },
     { id: 2, title: 'Incident Report - Armed Robbery', type: 'Incident', status: 'draft', created_by: 'Officer Smith', created_at: '2024-01-16', case_number: '2024-001' },
@@ -33,7 +56,7 @@ const Reports = () => {
   };
 
   return (
-    <MainLayout user={mockUser}>
+    <MainLayout user={user}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
