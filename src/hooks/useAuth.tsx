@@ -50,7 +50,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
+      // Use any type to bypass TypeScript errors until schema is updated
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', userId)
