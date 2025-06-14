@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -19,6 +20,17 @@ export default {
 		},
 		extend: {
 			colors: {
+				// Government-grade color palette
+				'gov-primary': '#1F3B4D',      // Deep Blue
+				'gov-secondary': '#3A6C8C',    // Steel Blue  
+				'gov-background': '#F7F9FB',   // Off White
+				'gov-action': '#0056b3',       // Royal Blue
+				'gov-danger': '#D32F2F',       // Red 700
+				'gov-success': '#2E7D32',      // Green 700
+				'gov-warning': '#F57C00',      // Orange 700
+				'gov-text': '#1E293B',         // Dark slate
+				'gov-muted': '#64748B',        // Slate 500
+				
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
@@ -68,6 +80,9 @@ export default {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)'
 			},
+			fontFamily: {
+				'sans': ['Inter', 'Roboto', 'system-ui', 'sans-serif'],
+			},
 			keyframes: {
 				'accordion-down': {
 					from: {
@@ -84,11 +99,22 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'fade-in': {
+					'0%': {
+						opacity: '0',
+						transform: 'translateY(10px)'
+					},
+					'100%': {
+						opacity: '1',
+						transform: 'translateY(0)'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'fade-in': 'fade-in 0.3s ease-out'
 			}
 		}
 	},
