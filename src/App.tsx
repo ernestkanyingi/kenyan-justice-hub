@@ -13,6 +13,7 @@ import Incidents from "./pages/Incidents";
 import Admin from "./pages/Admin";
 import AuditTrail from "./pages/AuditTrail";
 import DesignSystem from "./pages/DesignSystem";
+import DocsPage from "./pages/Docs";
 
 const queryClient = new QueryClient();
 
@@ -89,6 +90,7 @@ const App = () => (
               } 
             />
             <Route path="/design-system" element={<DesignSystem />} />
+            <Route path="/docs" element={<DocsPage />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
