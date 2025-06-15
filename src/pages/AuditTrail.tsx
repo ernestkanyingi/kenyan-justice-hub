@@ -8,6 +8,12 @@ import { supabase } from "@/integrations/supabase/client";
 
 const AuditTrail = () => {
   const { profile } = useAuth();
+  // patch in name field for MainLayout
+  const user = profile ? {
+    ...profile,
+    name: profile.full_name,
+  } : null;
+  
   const { data, isLoading, error } = useQuery({
     queryKey: ["audit_logs"],
     queryFn: async () => {
@@ -17,12 +23,12 @@ const AuditTrail = () => {
     },
   });
 
-  if (!profile) return <div>Loading...</div>;
+  if (!user) return <div>Loading...</div>;
   if (isLoading) return <div>Loading audit logs...</div>;
   if (error) return <div>Failed to load audit logs</div>;
 
   return (
-    <MainLayout user={profile}>
+    <MainLayout user={user}>
       <div className="gov-container max-w-3xl mx-auto py-8">
         <AuditTable audits={data || []} />
       </div>

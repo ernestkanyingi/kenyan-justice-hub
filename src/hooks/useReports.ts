@@ -28,6 +28,6 @@ export function useReportCreate() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries(["reports"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["reports"] }),
   });
 }

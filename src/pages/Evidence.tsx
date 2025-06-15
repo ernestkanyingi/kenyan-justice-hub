@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, Image, Video, File, Search } from "lucide-react";
 import { useEvidenceList, useEvidenceUpload } from "@/hooks/useEvidence";
 import { logAudit } from "@/hooks/useAuditLog";
+import { supabase } from "@/integrations/supabase/client";
 
 const MAX_SIZE = 100 * 1024 * 1024; // 100MB
 
@@ -19,8 +20,10 @@ const Evidence = () => {
   const uploadMutation = useEvidenceUpload();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // ... user/auth checks same ...
-  if (!profile) {
+  // add `name` field for MainLayout
+  const user = profile ? { ...profile, name: profile.full_name } : null;
+
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -53,7 +56,7 @@ const Evidence = () => {
   };
 
   return (
-    <MainLayout user={profile}>
+    <MainLayout user={user}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

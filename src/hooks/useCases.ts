@@ -10,7 +10,6 @@ export function useCasesList(filters: any = {}) {
       if (filters.q) {
         q = q.ilike("title", `%${filters.q}%`);
       }
-      // Add more filter logic as needed
       const { data, error } = await q;
       if (error) throw error;
       return data;
@@ -26,7 +25,7 @@ export function useCaseCreate() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries(["cases"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cases"] }),
   });
 }
 
@@ -38,6 +37,6 @@ export function useCaseUpdate() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries(["cases"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["cases"] }),
   });
 }

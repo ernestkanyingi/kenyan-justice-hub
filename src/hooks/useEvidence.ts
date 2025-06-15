@@ -24,12 +24,10 @@ export function useEvidenceUpload() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { file: File, meta: any }) => {
-      // 1. Upload file to Supabase storage bucket ‘evidence’
       const { file, meta } = payload;
       const storagePath = `${crypto.randomUUID()}_${file.name}`;
       const { error: uploadError } = await supabase.storage.from("evidence").upload(storagePath, file, { upsert: false });
       if (uploadError) throw uploadError;
-      // 2. Save record
       const { data, error } = await supabase.from("evidence").insert({
         ...meta,
         filename: file.name,
@@ -39,6 +37,6 @@ export function useEvidenceUpload() {
       if (error) throw error;
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries(["evidence"]),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["evidence"] }),
   });
 }

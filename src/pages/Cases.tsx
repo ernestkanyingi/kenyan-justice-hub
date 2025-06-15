@@ -11,19 +11,10 @@ import { logAudit } from "@/hooks/useAuditLog";
 
 const Cases = () => {
   const { profile } = useAuth();
+  const user = profile ? { ...profile, name: profile.full_name } : null;
   const [search, setSearch] = useState("");
   const { data: cases, isLoading, error } = useCasesList({ q: search });
   const createCase = useCaseCreate();
-
-  // Convert profile to the format expected by MainLayout
-  const user = profile ? {
-    id: profile.id,
-    name: profile.full_name,
-    email: profile.email,
-    role: profile.role,
-    badge_number: profile.badge_number || undefined,
-    department: profile.department || undefined,
-  } : null;
 
   if (!profile) {
     return (
@@ -49,7 +40,7 @@ const Cases = () => {
   };
 
   return (
-    <MainLayout user={profile}>
+    <MainLayout user={user}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

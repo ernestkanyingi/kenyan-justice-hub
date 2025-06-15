@@ -1,10 +1,11 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import type { Json } from "@/integrations/supabase/types";
 
-export async function logAudit(action: string, context: object = {}) {
+// `context` must be typed as `Json`
+export async function logAudit(action: string, context: Json = null) {
   try {
-    // You can fetch profile if needed, or use user_id from session
     const { profile } = useAuth();
     if (!profile) return;
     await supabase.from("audit_logs").insert({
