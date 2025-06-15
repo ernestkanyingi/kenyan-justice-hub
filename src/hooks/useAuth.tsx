@@ -52,7 +52,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log('Fetching profile for user:', userId);
       
-      const { data, error } = await (supabase as any)
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -60,7 +60,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         console.error('Error fetching profile:', error);
-        // Profile might not exist yet due to trigger delay, set to null and let trigger handle it
         setProfile(null);
         return;
       }
@@ -76,14 +75,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch profile immediately without setTimeout
-          await fetchProfile(session.user.id);
+          // Use setTimeout to defer the async profile fetch and avoid blocking the auth state change
+          setTimeout(() => {
+            fetchProfile(session.user.id);
+          }, 0);
         } else {
           setProfile(null);
         }
@@ -93,12 +94,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        fetchProfile(session.user.id);
       }
       
       setLoading(false);
