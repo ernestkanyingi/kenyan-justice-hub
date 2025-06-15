@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -13,6 +12,7 @@ import Reports from "./pages/Reports";
 import Incidents from "./pages/Incidents";
 import Admin from "./pages/Admin";
 import AuditTrail from "./pages/AuditTrail";
+import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
@@ -88,6 +88,7 @@ const App = () => (
                 </ProtectedRoute>
               } 
             />
+            <Route path="/design-system" element={<DesignSystem />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>
