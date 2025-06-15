@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface User {
   id: string;
@@ -18,9 +19,14 @@ interface TopNavBarProps {
 }
 
 export const TopNavBar: React.FC<TopNavBarProps> = ({ user }) => {
-  const handleSignOut = () => {
-    // TODO: Implement sign out logic
-    console.log('Sign out clicked');
+  const { signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
   };
 
   const getRoleDisplayName = (role: string) => {
