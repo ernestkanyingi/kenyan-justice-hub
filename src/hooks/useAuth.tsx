@@ -113,36 +113,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
-      console.log('=== SIGNUP DEBUG INFO ===');
-      console.log('Current URL:', window.location.href);
-      console.log('Origin:', window.location.origin);
-      
-      // Test basic connectivity to Supabase using the known URL
-      console.log('Testing Supabase connectivity...');
-      const supabaseUrl = 'https://uuirkrlxpmfqljfldtqt.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1aXJrcmx4cG1mcWxqZmxkdHF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NDIxMDAsImV4cCI6MjA2NTUxODEwMH0.2ro97JRiAObl3ieJjQTxPiCdsMRNamUFRurQww7qhsQ';
-      
-      const connectivityTest = await fetch(`${supabaseUrl}/rest/v1/`, {
-        method: 'HEAD',
-        headers: {
-          'apikey': supabaseKey,
-        }
-      });
-      console.log('Connectivity test status:', connectivityTest.status);
-      
-      const redirectUrl = `${window.location.origin}/`;
-      console.log('Attempting signup with:', { 
-        email, 
-        redirectUrl,
-        hasPassword: !!password,
-        metadata: {
-          ...metadata,
-          // Don't log sensitive data
-          password: '[REDACTED]'
-        }
+      console.log('=== SIGNUP ATTEMPT ===');
+      console.log('Email:', email);
+      console.log('Metadata:', {
+        full_name: metadata.full_name,
+        badge_number: metadata.badge_number,
+        department: metadata.department,
+        role: metadata.role || 'officer'
       });
 
-      const signUpOptions = {
+      const redirectUrl = `${window.location.origin}/`;
+      console.log('Redirect URL:', redirectUrl);
+
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -154,56 +137,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             role: metadata.role || 'officer'
           }
         }
-      };
-
-      console.log('SignUp options (sanitized):', {
-        ...signUpOptions,
-        password: '[REDACTED]'
       });
 
-      const { data, error } = await supabase.auth.signUp(signUpOptions);
-
-      console.log('Supabase response data:', data);
+      console.log('Signup response:', { data, error });
 
       if (error) {
-        console.error('Signup error details:', {
-          message: error.message,
-          status: error.status,
-          statusText: error.name,
-          details: error
-        });
+        console.error('Signup error:', error);
         
-        // Provide more specific error messages
-        if (error.message.includes('fetch')) {
-          toast.error('Network error: Cannot connect to authentication service. Please check your internet connection.');
+        // Handle specific error cases
+        if (error.message.includes('User already registered')) {
+          toast.error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Invalid login credentials')) {
           toast.error('Invalid email or password format.');
-        } else if (error.message.includes('User already registered')) {
-          toast.error('An account with this email already exists. Please try signing in instead.');
+        } else if (error.message.includes('fetch')) {
+          toast.error('Unable to connect to server. Please check your internet connection and try again.');
         } else {
           toast.error(`Registration failed: ${error.message}`);
         }
         return { error };
       }
 
-      console.log('Signup successful, user data:', data);
+      console.log('Signup successful!');
       toast.success('Registration successful! Please check your email to verify your account.');
       return { error: null };
     } catch (error: any) {
-      console.error('Signup catch error details:', {
-        name: error.name,
-        message: error.message,
-        stack: error.stack,
-        cause: error.cause
-      });
+      console.error('Signup catch error:', error);
       
-      // Handle different types of network errors
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        toast.error('Network error: Unable to reach the server. Please check your connection and try again.');
+        toast.error('Unable to connect to server. Please check your internet connection.');
       } else if (error.name === 'AbortError') {
-        toast.error('Request timeout: The server took too long to respond.');
+        toast.error('Request timeout. Please try again.');
       } else {
-        toast.error(`Unexpected error during registration: ${error.message}`);
+        toast.error(`Unexpected error: ${error.message}`);
       }
       return { error };
     }
