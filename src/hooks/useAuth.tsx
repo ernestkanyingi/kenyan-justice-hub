@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -113,10 +112,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
-      console.log('Starting signup process...');
+      console.log('=== DETAILED SIGNUP DEBUG ===');
       console.log('Email:', email);
+      console.log('Password length:', password?.length);
+      console.log('Metadata:', metadata);
+      console.log('Supabase URL:', 'https://uuirkrlxpmfqljfldtqt.supabase.co');
       
-      // Simple signup without redirect URL first to test basic connectivity
+      // Test basic connectivity first
+      console.log('Testing basic connectivity...');
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -130,16 +134,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       });
 
-      console.log('Signup response:', { data, error });
+      console.log('=== SIGNUP RESPONSE ===');
+      console.log('Data:', data);
+      console.log('Error:', error);
 
       if (error) {
-        console.error('Signup error:', error);
+        console.error('Supabase signup error details:', {
+          message: error.message,
+          status: error.status,
+          statusText: error.name
+        });
         
         // Handle specific error cases
         if (error.message.includes('User already registered')) {
           toast.error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Invalid login credentials')) {
           toast.error('Invalid email or password format.');
+        } else if (error.message.includes('fetch') || error.message.includes('Failed to fetch')) {
+          toast.error('Network connection failed. Please check your internet connection and try again.');
         } else {
           toast.error(`Registration failed: ${error.message}`);
         }
@@ -150,8 +162,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       toast.success('Registration successful! Please check your email to verify your account.');
       return { error: null };
     } catch (error: any) {
-      console.error('Signup catch error:', error);
-      toast.error(`Network error: ${error.message}`);
+      console.error('=== SIGNUP CATCH ERROR ===');
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Full error object:', error);
+      
+      if (error.message?.includes('fetch') || error.name === 'TypeError') {
+        toast.error('Unable to connect to authentication server. Please check your internet connection and try again.');
+      } else {
+        toast.error(`Unexpected error during registration: ${error.message}`);
+      }
       return { error };
     }
   };
