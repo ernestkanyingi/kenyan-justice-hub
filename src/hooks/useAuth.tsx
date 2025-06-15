@@ -1,3 +1,4 @@
+
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,8 +50,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const fetchProfile = async (userId: string) => {
     try {
-      // Use any type to bypass TypeScript errors until schema is updated
-      const { data, error } = await (supabase as any)
+      console.log('Fetching profile for user:', userId);
+      
+      const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -58,9 +60,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         console.error('Error fetching profile:', error);
+        
+        // If profile doesn't exist, create one for existing users
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating one for existing user');
+          const user = await supabase.auth.getUser();
+          
+          if (user.data.user) {
+            const { data: newProfile, error: createError } = await supabase
+              .from('profiles')
+              .insert({
+                id: userId,
+                email: user.data.user.email || '',
+                full_name: user.data.user.user_metadata?.full_name || 'User',
+                badge_number: user.data.user.user_metadata?.badge_number,
+                department: user.data.user.user_metadata?.department,
+                role: user.data.user.user_metadata?.role || 'officer'
+              })
+              .select()
+              .single();
+
+            if (createError) {
+              console.error('Error creating profile:', createError);
+            } else {
+              console.log('Profile created successfully:', newProfile);
+              setProfile(newProfile);
+            }
+          }
+        }
         return;
       }
 
+      console.log('Profile fetched successfully:', data);
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -117,9 +148,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('Password length:', password?.length);
       console.log('Metadata:', metadata);
       console.log('Supabase URL:', 'https://uuirkrlxpmfqljfldtqt.supabase.co');
-      
-      // Test basic connectivity first
-      console.log('Testing basic connectivity...');
       
       const { data, error } = await supabase.auth.signUp({
         email,
