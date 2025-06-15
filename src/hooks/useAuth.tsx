@@ -1,4 +1,3 @@
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +50,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchProfile = async (userId: string) => {
     try {
       console.log('Fetching profile for user:', userId);
-      
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -65,7 +63,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       console.log('Profile fetched successfully:', data);
-      setProfile(data);
+
+      // Only allow valid role values
+      const validRoles = ['officer', 'investigator', 'supervisor', 'admin'] as const;
+      const safeRole =
+        validRoles.includes(data.role as any) ? (data.role as Profile['role']) : 'officer';
+
+      setProfile({
+        ...data,
+        role: safeRole,
+      });
     } catch (error) {
       console.error('Error fetching profile:', error);
       setProfile(null);
