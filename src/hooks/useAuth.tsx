@@ -113,23 +113,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
-      console.log('=== SIGNUP ATTEMPT ===');
+      console.log('Starting signup process...');
       console.log('Email:', email);
-      console.log('Metadata:', {
-        full_name: metadata.full_name,
-        badge_number: metadata.badge_number,
-        department: metadata.department,
-        role: metadata.role || 'officer'
-      });
-
-      const redirectUrl = `${window.location.origin}/`;
-      console.log('Redirect URL:', redirectUrl);
-
+      
+      // Simple signup without redirect URL first to test basic connectivity
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: redirectUrl,
           data: {
             full_name: metadata.full_name,
             badge_number: metadata.badge_number,
@@ -149,8 +140,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           toast.error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Invalid login credentials')) {
           toast.error('Invalid email or password format.');
-        } else if (error.message.includes('fetch')) {
-          toast.error('Unable to connect to server. Please check your internet connection and try again.');
         } else {
           toast.error(`Registration failed: ${error.message}`);
         }
@@ -162,14 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return { error: null };
     } catch (error: any) {
       console.error('Signup catch error:', error);
-      
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        toast.error('Unable to connect to server. Please check your internet connection.');
-      } else if (error.name === 'AbortError') {
-        toast.error('Request timeout. Please try again.');
-      } else {
-        toast.error(`Unexpected error: ${error.message}`);
-      }
+      toast.error(`Network error: ${error.message}`);
       return { error };
     }
   };
