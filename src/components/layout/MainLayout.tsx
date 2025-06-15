@@ -19,7 +19,7 @@ interface MainLayoutProps {
 
 export const MainLayout: React.FC<MainLayoutProps> = ({ children, user }) => {
   return (
-    <div className="min-h-screen bg-gov-background">
+    <div className="min-h-screen gov-bg-background">
       <TopNavBar user={user} />
       <div className="flex">
         <div className="hidden lg:block">
