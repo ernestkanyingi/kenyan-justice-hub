@@ -52,7 +52,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       console.log('Fetching profile for user:', userId);
       
-      // Use type assertion to bypass TypeScript errors until schema is updated
       const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*')
@@ -61,34 +60,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       if (error) {
         console.error('Error fetching profile:', error);
-        
-        // If profile doesn't exist, create one for existing users
-        if (error.code === 'PGRST116') {
-          console.log('Profile not found, creating one for existing user');
-          const user = await supabase.auth.getUser();
-          
-          if (user.data.user) {
-            const { data: newProfile, error: createError } = await (supabase as any)
-              .from('profiles')
-              .insert({
-                id: userId,
-                email: user.data.user.email || '',
-                full_name: user.data.user.user_metadata?.full_name || 'User',
-                badge_number: user.data.user.user_metadata?.badge_number,
-                department: user.data.user.user_metadata?.department,
-                role: user.data.user.user_metadata?.role || 'officer'
-              })
-              .select()
-              .single();
-
-            if (createError) {
-              console.error('Error creating profile:', createError);
-            } else {
-              console.log('Profile created successfully:', newProfile);
-              setProfile(newProfile);
-            }
-          }
-        }
+        // Profile might not exist yet due to trigger delay, set to null and let trigger handle it
+        setProfile(null);
         return;
       }
 
@@ -96,6 +69,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setProfile(data);
     } catch (error) {
       console.error('Error fetching profile:', error);
+      setProfile(null);
     }
   };
 
@@ -108,10 +82,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch profile data after user is authenticated
-          setTimeout(() => {
-            fetchProfile(session.user.id);
-          }, 0);
+          // Fetch profile immediately without setTimeout
+          await fetchProfile(session.user.id);
         } else {
           setProfile(null);
         }
@@ -121,14 +93,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        setTimeout(() => {
-          fetchProfile(session.user.id);
-        }, 0);
+        await fetchProfile(session.user.id);
       }
       
       setLoading(false);
@@ -144,11 +114,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     role?: string;
   }) => {
     try {
-      console.log('=== DETAILED SIGNUP DEBUG ===');
+      console.log('=== SIGNUP DEBUG ===');
       console.log('Email:', email);
-      console.log('Password length:', password?.length);
       console.log('Metadata:', metadata);
-      console.log('Supabase URL:', 'https://uuirkrlxpmfqljfldtqt.supabase.co');
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -168,13 +136,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('Error:', error);
 
       if (error) {
-        console.error('Supabase signup error details:', {
-          message: error.message,
-          status: error.status,
-          statusText: error.name
-        });
+        console.error('Supabase signup error:', error);
         
-        // Handle specific error cases
         if (error.message.includes('User already registered')) {
           toast.error('An account with this email already exists. Please try signing in instead.');
         } else if (error.message.includes('Invalid login credentials')) {
@@ -192,10 +155,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return { error: null };
     } catch (error: any) {
       console.error('=== SIGNUP CATCH ERROR ===');
-      console.error('Error name:', error.name);
-      console.error('Error message:', error.message);
-      console.error('Error stack:', error.stack);
-      console.error('Full error object:', error);
+      console.error('Error:', error);
       
       if (error.message?.includes('fetch') || error.name === 'TypeError') {
         toast.error('Unable to connect to authentication server. Please check your internet connection and try again.');
