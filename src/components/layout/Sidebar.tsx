@@ -93,13 +93,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   return (
     <nav className="w-64 bg-white border-r border-slate-200 h-[calc(100vh-73px)] sticky top-[73px] overflow-y-auto">
       <div className="p-4">
-        {/* Security Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        {/* Security Notice with Government Styling */}
+        <div className="bg-gov-background border border-gov-primary/20 rounded-lg p-3 mb-4">
           <div className="flex items-center space-x-2">
-            <Shield className="w-4 h-4 text-blue-600" />
-            <span className="text-xs font-medium text-blue-800">Secure Access</span>
+            <Shield className="w-4 h-4 text-gov-primary" />
+            <span className="text-xs font-medium text-gov-primary">Secure Access</span>
           </div>
-          <p className="text-xs text-blue-600 mt-1">
+          <p className="text-xs text-gov-text-secondary mt-1">
             All actions are logged and monitored
           </p>
         </div>
@@ -119,7 +119,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                   className={`flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                     active 
                       ? 'bg-gov-primary text-white shadow-sm' 
-                      : 'text-slate-700 hover:bg-slate-100 hover:text-gov-primary'
+                      : 'text-gov-text hover:bg-gov-background hover:text-gov-primary'
                   }`}
                 >
                   <div className="flex items-center space-x-3">
@@ -131,7 +131,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                     <span className={`px-2 py-1 text-xs rounded-full font-medium shrink-0 ${
                       active 
                         ? 'bg-white text-gov-primary' 
-                        : 'bg-red-100 text-red-700'
+                        : 'bg-gov-danger text-white'
                     }`}>
                       {item.badge}
                     </span>
@@ -141,34 +141,34 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             })}
         </div>
 
-        {/* Role-specific quick actions */}
+        {/* Role-specific quick actions with Government Styling */}
         <div className="mt-6 pt-4 border-t border-slate-200">
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-3">
+          <p className="text-xs font-medium text-gov-text-secondary uppercase tracking-wide mb-3">
             Quick Actions
           </p>
           
           {user.role === 'officer' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
+            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
               New Incident Report
             </button>
           )}
           
           {['investigator', 'supervisor', 'admin'].includes(user.role) && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
+            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
               Create New Case
             </button>
           )}
           
           {user.role === 'admin' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-slate-700 hover:bg-slate-100 rounded-lg transition-colors truncate">
+            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
               System Settings
             </button>
           )}
         </div>
 
-        {/* User session info */}
+        {/* User session info with Government Styling */}
         <div className="mt-6 pt-4 border-t border-slate-200">
-          <div className="text-xs text-slate-500">
+          <div className="text-xs text-gov-text-secondary">
             <p>Session: Active</p>
             <p>Last login: {new Date().toLocaleDateString()}</p>
           </div>

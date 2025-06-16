@@ -44,90 +44,90 @@ const Incidents = () => {
   return (
     <MainLayout user={mockUser}>
       <div className="space-y-6">
-        {/* Header */}
+        {/* Header with Government Styling */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Incident Management</h1>
-            <p className="text-slate-600">Track and respond to incidents</p>
+            <h1 className="text-2xl font-bold text-gov-text">Incident Management</h1>
+            <p className="text-gov-text-secondary">Track and respond to incidents</p>
           </div>
-          <Button className="bg-gov-primary hover:bg-gov-primary/90 w-full sm:w-auto">
+          <Button className="gov-button-primary w-full sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Report Incident
           </Button>
         </div>
 
-        {/* Quick Stats */}
+        {/* Quick Stats with Government Styling */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
+          <Card className="gov-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Active Incidents</p>
-                  <p className="text-2xl font-bold text-slate-900">12</p>
+                  <p className="text-sm font-medium text-gov-text-secondary">Active Incidents</p>
+                  <p className="text-2xl font-bold text-gov-text">12</p>
                 </div>
-                <AlertTriangle className="w-8 h-8 text-red-600" />
+                <AlertTriangle className="w-8 h-8 text-gov-danger" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="gov-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Responding</p>
-                  <p className="text-2xl font-bold text-slate-900">3</p>
+                  <p className="text-sm font-medium text-gov-text-secondary">Responding</p>
+                  <p className="text-2xl font-bold text-gov-text">3</p>
                 </div>
-                <Clock className="w-8 h-8 text-blue-600" />
+                <Clock className="w-8 h-8 text-gov-action" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="gov-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">High Priority</p>
-                  <p className="text-2xl font-bold text-slate-900">2</p>
+                  <p className="text-sm font-medium text-gov-text-secondary">High Priority</p>
+                  <p className="text-2xl font-bold text-gov-text">2</p>
                 </div>
-                <AlertTriangle className="w-8 h-8 text-red-600" />
+                <AlertTriangle className="w-8 h-8 text-gov-danger" />
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="gov-card">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Resolved Today</p>
-                  <p className="text-2xl font-bold text-slate-900">8</p>
+                  <p className="text-sm font-medium text-gov-text-secondary">Resolved Today</p>
+                  <p className="text-2xl font-bold text-gov-text">8</p>
                 </div>
-                <AlertTriangle className="w-8 h-8 text-green-600" />
+                <AlertTriangle className="w-8 h-8 text-gov-success" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Search */}
-        <Card>
+        {/* Search with Government Styling */}
+        <Card className="gov-card">
           <CardContent className="p-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gov-text-secondary w-4 h-4" />
               <Input 
                 placeholder="Search incidents by title, location, or officer..." 
-                className="pl-10"
+                className="pl-10 gov-form-input"
               />
             </div>
           </CardContent>
         </Card>
 
-        {/* Incidents List */}
+        {/* Incidents List with Government Styling */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {mockIncidents.map((incident) => (
-            <Card key={incident.id} className="hover:shadow-md transition-shadow">
+            <Card key={incident.id} className="gov-card hover:shadow-gov-md transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="min-w-0 flex-1">
-                    <CardTitle className="text-lg font-semibold text-slate-900 truncate">
+                    <CardTitle className="text-lg font-semibold text-gov-text truncate">
                       {incident.title}
                     </CardTitle>
-                    <div className="flex items-center text-sm text-slate-600 mt-1">
+                    <div className="flex items-center text-sm text-gov-text-secondary mt-1">
                       <MapPin className="w-4 h-4 mr-1" />
                       <span className="truncate">{incident.location}</span>
                     </div>
@@ -145,24 +145,24 @@ const Incidents = () => {
               <CardContent>
                 <div className="space-y-2 text-sm">
                   <div>
-                    <span className="text-slate-500">Type:</span>
-                    <span className="font-medium ml-1">{incident.type}</span>
+                    <span className="text-gov-text-secondary">Type:</span>
+                    <span className="font-medium ml-1 text-gov-text">{incident.type}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">Assigned Officer:</span>
-                    <span className="font-medium ml-1">{incident.officer}</span>
+                    <span className="text-gov-text-secondary">Assigned Officer:</span>
+                    <span className="font-medium ml-1 text-gov-text">{incident.officer}</span>
                   </div>
                   <div className="flex items-center">
-                    <Clock className="w-4 h-4 text-slate-400 mr-1" />
-                    <span className="text-slate-500">Reported:</span>
-                    <span className="font-medium ml-1">
+                    <Clock className="w-4 h-4 text-gov-text-secondary mr-1" />
+                    <span className="text-gov-text-secondary">Reported:</span>
+                    <span className="font-medium ml-1 text-gov-text">
                       {new Date(incident.reported_at).toLocaleString()}
                     </span>
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                  <Button size="sm" className="flex-1">View Details</Button>
-                  <Button size="sm" variant="outline" className="flex-1">Update Status</Button>
+                  <Button size="sm" className="flex-1 gov-button-primary">View Details</Button>
+                  <Button size="sm" className="flex-1 gov-button-secondary">Update Status</Button>
                 </div>
               </CardContent>
             </Card>

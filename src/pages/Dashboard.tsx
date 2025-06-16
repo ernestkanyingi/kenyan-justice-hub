@@ -112,11 +112,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
 
   return (
     <div className="space-y-8">
-      {/* Page Header */}
+      {/* Page Header with Government Styling */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gov-text">Dashboard</h1>
-          <p className="text-slate-600 mt-1">
+          <p className="text-gov-text-secondary mt-1">
             Welcome back, {user.name}. Here's your law enforcement overview.
           </p>
         </div>
@@ -127,7 +127,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
               New Case
             </Button>
           )}
-          <Button variant="outline" className="gov-button-secondary">
+          <Button className="gov-button-action">
             <FileText className="w-4 h-4 mr-2" />
             New Report
           </Button>
@@ -145,7 +145,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             <CardTitle className="text-lg font-semibold text-gov-text">
               Recent Cases
             </CardTitle>
-            <Button variant="ghost" size="sm" className="text-gov-primary">
+            <Button variant="ghost" size="sm" className="text-gov-action hover:text-gov-action/80">
               View All
             </Button>
           </CardHeader>
@@ -161,11 +161,11 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                       <h4 className="font-medium text-gov-text">
                         Case #{caseItem.case_number}
                       </h4>
-                      <p className="text-sm text-slate-600">{caseItem.title}</p>
+                      <p className="text-sm text-gov-text-secondary">{caseItem.title}</p>
                     </div>
                     {getStatusBadge(caseItem.status)}
                   </div>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
+                  <div className="flex items-center justify-between text-xs text-gov-text-secondary">
                     <div className="flex items-center">
                       <User className="w-3 h-3 mr-1" />
                       {caseItem.assigned_officer}
@@ -197,10 +197,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
                     <p className="text-sm font-medium text-gov-text">
                       {activity.action}
                     </p>
-                    <p className="text-sm text-slate-600">
+                    <p className="text-sm text-gov-text-secondary">
                       Case {activity.case} by {activity.user}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-gov-text-secondary mt-1">
                       {new Date(activity.timestamp).toLocaleString()}
                     </p>
                   </div>
