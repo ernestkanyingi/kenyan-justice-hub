@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,7 +10,9 @@ import Index from "./pages/Index";
 import Cases from "./pages/Cases";
 import Evidence from "./pages/Evidence";
 import Reports from "./pages/Reports";
+import CreateReport from "./pages/CreateReport";
 import Incidents from "./pages/Incidents";
+import CreateIncident from "./pages/CreateIncident";
 import Admin from "./pages/Admin";
 import AuditTrail from "./pages/AuditTrail";
 import DesignSystem from "./pages/DesignSystem";
@@ -66,10 +69,26 @@ const App = () => (
               } 
             />
             <Route 
+              path="/create-report" 
+              element={
+                <ProtectedRoute>
+                  <CreateReport />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
               path="/incidents" 
               element={
                 <ProtectedRoute>
                   <Incidents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/create-incident" 
+              element={
+                <ProtectedRoute>
+                  <CreateIncident />
                 </ProtectedRoute>
               } 
             />

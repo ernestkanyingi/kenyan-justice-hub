@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -83,6 +84,8 @@ const recentActivity = [
 ];
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
+  const navigate = useNavigate();
+
   const getStatusBadge = (status: string) => {
     const config = {
       open: { color: 'bg-red-100 text-red-800', icon: AlertTriangle },
@@ -110,6 +113,14 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
     return colors[priority as keyof typeof colors] || colors.medium;
   };
 
+  const handleNewCase = () => {
+    navigate('/cases');
+  };
+
+  const handleNewReport = () => {
+    navigate('/create-report');
+  };
+
   return (
     <div className="space-y-8">
       {/* Page Header with Government Styling */}
@@ -122,12 +133,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
         </div>
         <div className="flex space-x-3">
           {['investigator', 'supervisor', 'admin'].includes(user.role) && (
-            <Button className="gov-button-primary">
+            <Button onClick={handleNewCase} className="bg-gov-primary hover:bg-gov-primary/90 text-white">
               <Plus className="w-4 h-4 mr-2" />
               New Case
             </Button>
           )}
-          <Button className="gov-button-action">
+          <Button onClick={handleNewReport} className="bg-gov-action hover:bg-gov-action/90 text-white">
             <FileText className="w-4 h-4 mr-2" />
             New Report
           </Button>
@@ -145,7 +156,12 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             <CardTitle className="text-lg font-semibold text-gov-text">
               Recent Cases
             </CardTitle>
-            <Button variant="ghost" size="sm" className="text-gov-action hover:text-gov-action/80">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/cases')}
+              className="text-gov-action hover:text-gov-action/80"
+            >
               View All
             </Button>
           </CardHeader>

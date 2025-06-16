@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { 
   BarChart3, 
   FileText, 
@@ -35,6 +35,7 @@ interface NavItem {
 
 export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigation: NavItem[] = [
     { 
@@ -88,6 +89,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       return location.pathname === '/' || location.pathname === '/dashboard';
     }
     return location.pathname.startsWith(href);
+  };
+
+  const handleNewIncidentReport = () => {
+    navigate('/create-incident');
+  };
+
+  const handleCreateNewCase = () => {
+    navigate('/cases');
+  };
+
+  const handleSystemSettings = () => {
+    navigate('/admin');
   };
 
   return (
@@ -148,19 +161,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           </p>
           
           {user.role === 'officer' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
+            <button 
+              onClick={handleNewIncidentReport}
+              className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate"
+            >
               New Incident Report
             </button>
           )}
           
           {['investigator', 'supervisor', 'admin'].includes(user.role) && (
-            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
+            <button 
+              onClick={handleCreateNewCase}
+              className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate"
+            >
               Create New Case
             </button>
           )}
           
           {user.role === 'admin' && (
-            <button className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate">
+            <button 
+              onClick={handleSystemSettings}
+              className="w-full text-left px-3 py-2 text-sm text-gov-text hover:bg-gov-background hover:text-gov-primary rounded-lg transition-colors truncate"
+            >
               System Settings
             </button>
           )}

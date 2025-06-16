@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +11,7 @@ import { FileText, Plus, Search, Download, AlertTriangle, BarChart3, ClipboardLi
 
 const Reports = () => {
   const { profile } = useAuth();
+  const navigate = useNavigate();
 
   // Convert profile to the format expected by MainLayout
   const user = profile ? {
@@ -57,7 +59,8 @@ const Reports = () => {
       roles: ['officer', 'investigator', 'supervisor', 'admin'],
       bgColor: 'bg-gov-primary',
       textColor: 'text-white',
-      hoverColor: 'hover:bg-gov-primary/90'
+      hoverColor: 'hover:bg-gov-primary/90',
+      reportType: 'incident'
     },
     {
       title: 'Investigation Report',
@@ -67,7 +70,8 @@ const Reports = () => {
       roles: ['investigator', 'supervisor', 'admin'],
       bgColor: 'bg-gov-secondary',
       textColor: 'text-white',
-      hoverColor: 'hover:bg-gov-secondary/90'
+      hoverColor: 'hover:bg-gov-secondary/90',
+      reportType: 'investigation'
     },
     {
       title: 'Statistical Report',
@@ -77,7 +81,8 @@ const Reports = () => {
       roles: ['supervisor', 'admin'],
       bgColor: 'bg-gov-action',
       textColor: 'text-white',
-      hoverColor: 'hover:bg-gov-action/90'
+      hoverColor: 'hover:bg-gov-action/90',
+      reportType: 'statistical'
     },
     {
       title: 'Custom Report',
@@ -87,7 +92,8 @@ const Reports = () => {
       roles: ['investigator', 'supervisor', 'admin'],
       bgColor: 'bg-slate-100',
       textColor: 'text-slate-700',
-      hoverColor: 'hover:bg-slate-200'
+      hoverColor: 'hover:bg-slate-200',
+      reportType: 'custom'
     }
   ];
 
@@ -95,6 +101,14 @@ const Reports = () => {
   const availableActions = quickActions.filter(action => 
     action.roles.includes(user.role)
   );
+
+  const handleQuickAction = (reportType: string) => {
+    navigate(`/create-report?type=${reportType}`);
+  };
+
+  const handleNewReport = () => {
+    navigate('/create-report');
+  };
 
   return (
     <MainLayout user={user}>
@@ -105,7 +119,10 @@ const Reports = () => {
             <h1 className="text-2xl font-bold text-gov-text">Reports</h1>
             <p className="text-gov-text-secondary">Create and manage incident reports</p>
           </div>
-          <Button className="bg-gov-primary hover:bg-gov-primary/90 text-white font-medium w-full sm:w-auto">
+          <Button 
+            onClick={handleNewReport}
+            className="bg-gov-primary hover:bg-gov-primary/90 text-white font-medium w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4 mr-2" />
             New Report
           </Button>
@@ -120,6 +137,7 @@ const Reports = () => {
               return (
                 <Card 
                   key={action.title} 
+                  onClick={() => handleQuickAction(action.reportType)}
                   className={`${action.bgColor} ${action.textColor} ${action.hoverColor} transition-all duration-200 cursor-pointer border-0 shadow-gov`}
                 >
                   <CardContent className="p-6 text-center">

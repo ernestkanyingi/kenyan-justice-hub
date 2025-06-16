@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,8 @@ const mockUser = {
 };
 
 const Incidents = () => {
+  const navigate = useNavigate();
+  
   const mockIncidents = [
     { id: 1, title: 'Traffic Accident on Main Street', type: 'Traffic', priority: 'medium', status: 'responding', location: 'Main St & 2nd Ave', reported_at: '2024-01-16T10:30:00Z', officer: 'Officer Davis' },
     { id: 2, title: 'Break-in Report', type: 'Burglary', priority: 'high', status: 'investigating', location: '123 Oak Street', reported_at: '2024-01-16T09:15:00Z', officer: 'Det. Johnson' },
@@ -41,6 +44,10 @@ const Incidents = () => {
     }
   };
 
+  const handleReportIncident = () => {
+    navigate('/create-incident');
+  };
+
   return (
     <MainLayout user={mockUser}>
       <div className="space-y-6">
@@ -50,7 +57,10 @@ const Incidents = () => {
             <h1 className="text-2xl font-bold text-gov-text">Incident Management</h1>
             <p className="text-gov-text-secondary">Track and respond to incidents</p>
           </div>
-          <Button className="gov-button-primary w-full sm:w-auto">
+          <Button 
+            onClick={handleReportIncident}
+            className="gov-button-primary w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Report Incident
           </Button>
