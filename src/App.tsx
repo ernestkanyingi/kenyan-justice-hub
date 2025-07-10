@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import Auth from "./pages/Auth";
 import Index from "./pages/Index";
 import Cases from "./pages/Cases";
@@ -21,11 +22,12 @@ import DocsPage from "./pages/Docs";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <AuthProvider>
-        <BrowserRouter>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <AuthProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
             <Route 
@@ -111,10 +113,11 @@ const App = () => (
             <Route path="/design-system" element={<DesignSystem />} />
             <Route path="/docs" element={<DocsPage />} />
           </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

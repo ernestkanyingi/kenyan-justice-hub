@@ -1,23 +1,60 @@
 
 import React from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Users, Shield, Database, Activity, AlertTriangle } from 'lucide-react';
-
-const mockUser = {
-  id: '1',
-  name: 'Administrator',
-  email: 'admin@police.gov',
-  role: 'admin' as const,
-  badge_number: '0001',
-  department: 'IT Administration'
-};
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 const Admin = () => {
+  const { profile } = useAuth();
+  
+  const user = profile ? {
+    id: profile.id,
+    name: profile.full_name,
+    email: profile.email,
+    role: profile.role,
+    badge_number: profile.badge_number || undefined,
+    department: profile.department || undefined,
+  } : null;
+
+  // Get user statistics
+  const { data: userStats } = useQuery({
+    queryKey: ['admin-user-stats'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role');
+      
+      if (error) throw error;
+      
+      const stats = {
+        total: data.length,
+        officers: data.filter(u => u.role === 'officer').length,
+        investigators: data.filter(u => u.role === 'investigator').length,
+        supervisors: data.filter(u => u.role === 'supervisor').length,
+        admins: data.filter(u => u.role === 'admin').length,
+      };
+      
+      return stats;
+    },
+  });
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gov-primary mx-auto"></div>
+          <p className="mt-4 text-gov-text-secondary">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   return (
-    <MainLayout user={mockUser}>
+    <MainLayout user={user}>
       <div className="space-y-6">
         {/* Header */}
         <div>
@@ -32,7 +69,7 @@ const Admin = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-slate-600">Total Users</p>
-                  <p className="text-2xl font-bold text-slate-900">47</p>
+                  <p className="text-2xl font-bold text-slate-900">{userStats?.total || 0}</p>
                 </div>
                 <Users className="w-8 h-8 text-blue-600" />
               </div>
@@ -84,24 +121,24 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 mb-4">Manage user accounts, roles, and permissions</p>
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Officers:</span>
-                  <Badge variant="secondary">25</Badge>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Officers:</span>
+                    <Badge variant="secondary">{userStats?.officers || 0}</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Investigators:</span>
+                    <Badge variant="secondary">{userStats?.investigators || 0}</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Supervisors:</span>
+                    <Badge variant="secondary">{userStats?.supervisors || 0}</Badge>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span>Admins:</span>
+                    <Badge variant="secondary">{userStats?.admins || 0}</Badge>
+                  </div>
                 </div>
-                <div className="flex justify-between text-sm">
-                  <span>Investigators:</span>
-                  <Badge variant="secondary">15</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Supervisors:</span>
-                  <Badge variant="secondary">5</Badge>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Admins:</span>
-                  <Badge variant="secondary">2</Badge>
-                </div>
-              </div>
               <Button className="w-full mt-4" variant="outline">Manage Users</Button>
             </CardContent>
           </Card>

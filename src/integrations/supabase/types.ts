@@ -163,6 +163,79 @@ export type Database = {
           },
         ]
       }
+      incidents: {
+        Row: {
+          assigned_officer_id: string | null
+          case_id: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          incident_number: string
+          location: string
+          priority: string
+          reported_by: string | null
+          status: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_officer_id?: string | null
+          case_id?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          incident_number: string
+          location: string
+          priority?: string
+          reported_by?: string | null
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_officer_id?: string | null
+          case_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          incident_number?: string
+          location?: string
+          priority?: string
+          reported_by?: string | null
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incidents_assigned_officer_id_fkey"
+            columns: ["assigned_officer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "incidents_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           badge_number: string | null

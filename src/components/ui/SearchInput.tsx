@@ -1,0 +1,40 @@
+import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Search, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+interface SearchInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
+}
+
+export const SearchInput: React.FC<SearchInputProps> = ({
+  value,
+  onChange,
+  placeholder = "Search...",
+  className = ""
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gov-text-secondary w-4 h-4" />
+      <Input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="pl-10 pr-10 gov-form-input"
+      />
+      {value && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => onChange("")}
+          className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0 hover:bg-gray-100"
+        >
+          <X className="w-3 h-3" />
+        </Button>
+      )}
+    </div>
+  );
+};

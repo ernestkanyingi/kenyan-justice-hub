@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { 
   FileText, 
   AlertTriangle, 
@@ -66,64 +67,76 @@ interface DashboardStatsProps {
 }
 
 export const DashboardStats: React.FC<DashboardStatsProps> = ({ userRole }) => {
-  // Mock data - replace with real API calls
-  const stats = {
-    totalCases: 156,
-    activeCases: 23,
-    closedCases: 133,
-    pendingEvidence: 8,
-    recentReports: 12,
-    criticalAlerts: 3
-  };
+  const { data: stats, isLoading } = useDashboardStats();
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i} className="gov-card">
+            <CardContent className="p-6">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (!stats) return null;
 
   const commonStats = [
     {
       title: 'Total Cases',
       value: stats.totalCases,
-      change: '+12% from last month',
-      trend: 'up' as const,
+      change: `${stats.monthlyNewCases} new this month`,
+      trend: 'neutral' as const,
       icon: FileText,
       description: 'All cases in the system'
     },
     {
       title: 'Active Cases',
       value: stats.activeCases,
-      change: '5 assigned to you',
+      change: 'Currently investigating',
       trend: 'neutral' as const,
       icon: AlertTriangle,
-      description: 'Currently being investigated'
+      description: 'Cases being worked on'
     },
     {
       title: 'Cases Closed',
       value: stats.closedCases,
-      change: '+8 this month',
+      change: 'Successfully resolved',
       trend: 'up' as const,
       icon: CheckCircle,
-      description: 'Successfully resolved'
+      description: 'Completed investigations'
     }
   ];
 
   const investigatorStats = [
     ...commonStats,
     {
-      title: 'Pending Evidence',
-      value: stats.pendingEvidence,
-      change: 'Requires review',
+      title: 'Evidence Files',
+      value: stats.totalEvidence,
+      change: 'Files uploaded',
       trend: 'neutral' as const,
       icon: Clock,
-      description: 'Evidence awaiting processing'
+      description: 'Evidence in system'
     }
   ];
 
   const adminStats = [
     ...investigatorStats,
     {
-      title: 'System Alerts',
-      value: stats.criticalAlerts,
-      change: '2 critical',
-      trend: 'down' as const,
+      title: 'Total Incidents',
+      value: stats.totalIncidents,
+      change: `${stats.activeIncidents} active`,
+      trend: 'neutral' as const,
       icon: AlertTriangle,
-      description: 'Requires immediate attention'
+      description: 'Incidents in system'
     }
   ];
 

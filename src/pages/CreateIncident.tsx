@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useIncidentCreate } from '@/hooks/useIncidents';
+import { logAudit } from '@/hooks/useAuditLog';
 import { AlertTriangle, ArrowLeft, MapPin } from 'lucide-react';
 
 const CreateIncident = () => {
@@ -23,6 +25,8 @@ const CreateIncident = () => {
     description: '',
     reported_by: '',
   });
+
+  const createIncident = useIncidentCreate();
 
   const user = profile ? {
     id: profile.id,
@@ -47,10 +51,21 @@ const CreateIncident = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // For now, we'll just navigate back to incidents page
-    // In a real implementation, you'd save to database
-    console.log('Creating incident:', formData);
-    navigate('/incidents');
+    try {
+      const incidentData = {
+        ...formData,
+        incident_number: `INC-${Date.now()}`,
+        created_by: profile.id,
+        status: 'reported'
+      };
+      
+      await createIncident.mutateAsync(incidentData);
+      await logAudit('Incident Created', incidentData as any);
+      
+      navigate('/incidents');
+    } catch (error) {
+      console.error('Failed to create incident:', error);
+    }
   };
 
   return (
@@ -183,10 +198,10 @@ const CreateIncident = () => {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={!formData.title || !formData.type || !formData.location}
+                  disabled={createIncident.isPending || !formData.title || !formData.type || !formData.location}
                   className="gov-button-primary"
                 >
-                  Submit Incident Report
+                  {createIncident.isPending ? 'Creating...' : 'Submit Incident Report'}
                 </Button>
               </div>
             </form>

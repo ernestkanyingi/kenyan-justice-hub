@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { DashboardStats } from '@/components/dashboard/DashboardStats';
+import { useCasesList } from '@/hooks/useCases';
+import { useRecentActivity } from '@/hooks/useDashboardStats';
 import { 
   FileText, 
   Plus, 
@@ -28,63 +30,13 @@ interface DashboardProps {
   user: User;
 }
 
-// Mock data - replace with real API calls
-const recentCases = [
-  {
-    id: '1',
-    case_number: 'CS-2024-001',
-    title: 'Downtown Burglary Investigation',
-    status: 'in-progress',
-    assigned_officer: 'Det. Sarah Johnson',
-    created_at: '2024-01-15T10:30:00Z',
-    priority: 'high'
-  },
-  {
-    id: '2',
-    case_number: 'CS-2024-002',
-    title: 'Vehicle Theft Report',
-    status: 'open',
-    assigned_officer: 'Officer Mike Davis',
-    created_at: '2024-01-14T14:20:00Z',
-    priority: 'medium'
-  },
-  {
-    id: '3',
-    case_number: 'CS-2024-003',
-    title: 'Fraud Investigation',
-    status: 'closed',
-    assigned_officer: 'Det. Alex Chen',
-    created_at: '2024-01-12T09:15:00Z',
-    priority: 'low'
-  }
-];
-
-const recentActivity = [
-  {
-    id: '1',
-    action: 'Evidence uploaded',
-    case: 'CS-2024-001',
-    user: 'Det. Sarah Johnson',
-    timestamp: '2024-01-15T16:45:00Z'
-  },
-  {
-    id: '2',
-    action: 'Case status updated',
-    case: 'CS-2024-002',
-    user: 'Officer Mike Davis',
-    timestamp: '2024-01-15T15:30:00Z'
-  },
-  {
-    id: '3',
-    action: 'Report submitted',
-    case: 'CS-2024-003',
-    user: 'Det. Alex Chen',
-    timestamp: '2024-01-15T14:20:00Z'
-  }
-];
 
 const Dashboard: React.FC<DashboardProps> = ({ user }) => {
   const navigate = useNavigate();
+  
+  // Use real data instead of mock data
+  const { data: recentCases = [], isLoading: casesLoading } = useCasesList({});
+  const { data: recentActivity = [], isLoading: activityLoading } = useRecentActivity();
 
   const getStatusBadge = (status: string) => {
     const config = {
@@ -166,34 +118,47 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentCases.map((caseItem) => (
-                <div 
-                  key={caseItem.id} 
-                  className={`p-4 border-l-4 ${getPriorityColor(caseItem.priority)} bg-slate-50 rounded-r-lg hover:bg-slate-100 transition-colors cursor-pointer`}
-                >
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h4 className="font-medium text-gov-text">
-                        Case #{caseItem.case_number}
-                      </h4>
-                      <p className="text-sm text-gov-text-secondary">{caseItem.title}</p>
+            {casesLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gov-primary mx-auto"></div>
+                <p className="mt-2 text-gov-text-secondary">Loading cases...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recentCases.slice(0, 3).map((caseItem) => (
+                  <div 
+                    key={caseItem.id} 
+                    className={`p-4 border-l-4 ${getPriorityColor(caseItem.priority || 'medium')} bg-slate-50 rounded-r-lg hover:bg-slate-100 transition-colors cursor-pointer`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h4 className="font-medium text-gov-text">
+                          Case #{caseItem.case_number}
+                        </h4>
+                        <p className="text-sm text-gov-text-secondary">{caseItem.title}</p>
+                      </div>
+                      {getStatusBadge(caseItem.status)}
                     </div>
-                    {getStatusBadge(caseItem.status)}
+                    <div className="flex items-center justify-between text-xs text-gov-text-secondary">
+                      <div className="flex items-center">
+                        <User className="w-3 h-3 mr-1" />
+                        Created by user
+                      </div>
+                      <div className="flex items-center">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        {new Date(caseItem.created_at).toLocaleDateString()}
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-gov-text-secondary">
-                    <div className="flex items-center">
-                      <User className="w-3 h-3 mr-1" />
-                      {caseItem.assigned_officer}
-                    </div>
-                    <div className="flex items-center">
-                      <Calendar className="w-3 h-3 mr-1" />
-                      {new Date(caseItem.created_at).toLocaleDateString()}
-                    </div>
+                ))}
+                {recentCases.length === 0 && (
+                  <div className="text-center py-8 text-gov-text-secondary">
+                    <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No cases found</p>
                   </div>
-                </div>
-              ))}
-            </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -205,24 +170,37 @@ const Dashboard: React.FC<DashboardProps> = ({ user }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentActivity.map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-slate-50 rounded-lg transition-colors">
-                  <div className="w-2 h-2 bg-gov-primary rounded-full mt-2 flex-shrink-0"></div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gov-text">
-                      {activity.action}
-                    </p>
-                    <p className="text-sm text-gov-text-secondary">
-                      Case {activity.case} by {activity.user}
-                    </p>
-                    <p className="text-xs text-gov-text-secondary mt-1">
-                      {new Date(activity.timestamp).toLocaleString()}
-                    </p>
+            {activityLoading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gov-primary mx-auto"></div>
+                <p className="mt-2 text-gov-text-secondary">Loading activity...</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {recentActivity.slice(0, 5).map((activity) => (
+                  <div key={activity.id} className="flex items-start space-x-3 p-3 hover:bg-slate-50 rounded-lg transition-colors">
+                    <div className="w-2 h-2 bg-gov-primary rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gov-text">
+                        {activity.action}
+                      </p>
+                      <p className="text-sm text-gov-text-secondary">
+                        {activity.context ? `${JSON.stringify(activity.context)}` : 'System action'}
+                      </p>
+                      <p className="text-xs text-gov-text-secondary mt-1">
+                        {new Date(activity.created_at).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+                {recentActivity.length === 0 && (
+                  <div className="text-center py-8 text-gov-text-secondary">
+                    <Clock className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p>No recent activity</p>
+                  </div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
